@@ -1,0 +1,314 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "BricolageGrotesque";
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: swap;
+  src: url("/assets/fonts/BricolageGrotesque.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Satoshi";
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url("/assets/fonts/Satoshi.woff2") format("woff2");
+}
+
+@layer base {
+  :root {
+    --radius: 0.625rem;
+
+    /* ── Teal/Navy Theme ── */
+    --background: 0.97 0.004 240;
+    --foreground: 0.16 0.04 250;
+
+    --card: 1 0 0;
+    --card-foreground: 0.16 0.04 250;
+
+    --popover: 1 0 0;
+    --popover-foreground: 0.16 0.04 250;
+
+    --primary: 0.68 0.17 200;
+    --primary-foreground: 0.08 0.03 250;
+
+    --secondary: 0.92 0.01 240;
+    --secondary-foreground: 0.2 0.04 250;
+
+    --muted: 0.94 0.006 240;
+    --muted-foreground: 0.5 0.02 240;
+
+    --accent: 0.68 0.17 200;
+    --accent-foreground: 0.08 0.03 250;
+
+    --destructive: 0.52 0.19 27;
+    --destructive-foreground: 0.97 0 0;
+
+    --border: 0.9 0.01 240;
+    --input: 0.9 0.01 240;
+    --ring: 0.68 0.17 200;
+
+    /* Semantic extras */
+    --success: 0.56 0.16 155;
+    --success-bg: 0.93 0.06 155;
+    --success-fg: 0.25 0.08 155;
+    --error: 0.52 0.19 27;
+    --error-bg: 0.93 0.05 27;
+    --error-fg: 0.3 0.12 27;
+    --warning: 0.72 0.17 60;
+    --warning-bg: 0.95 0.06 60;
+    --warning-fg: 0.3 0.1 60;
+    --teal: 0.68 0.17 200;
+    --teal-dark: 0.54 0.14 200;
+    --teal-glow: 0.78 0.12 190;
+
+    /* Navy palette for dark sections */
+    --navy-900: 0.12 0.04 252;
+    --navy-800: 0.16 0.05 252;
+    --navy-700: 0.22 0.055 252;
+
+    --chart-1: 0.68 0.17 200;
+    --chart-2: 0.56 0.16 155;
+    --chart-3: 0.52 0.19 27;
+    --chart-4: 0.78 0.14 80;
+    --chart-5: 0.65 0.18 310;
+
+    --sidebar: 0.12 0.04 252;
+    --sidebar-foreground: 0.88 0.01 252;
+    --sidebar-primary: 0.68 0.17 200;
+    --sidebar-primary-foreground: 0.08 0.03 250;
+    --sidebar-accent: 0.2 0.045 252;
+    --sidebar-accent-foreground: 0.88 0.01 252;
+    --sidebar-border: 0.25 0.04 252;
+    --sidebar-ring: 0.68 0.17 200;
+  }
+
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: "Satoshi", "Inter", system-ui, sans-serif;
+  }
+}
+
+/* ── Dark navy sections ── */
+.nav-dark {
+  background: oklch(0.12 0.042 252);
+}
+
+.hero-dark {
+  background: linear-gradient(
+    135deg,
+    oklch(0.1 0.04 255) 0%,
+    oklch(0.14 0.05 252) 40%,
+    oklch(0.16 0.055 242) 70%,
+    oklch(0.13 0.06 220) 100%
+  );
+}
+
+/* Dot-grid texture overlay for hero */
+.hero-grid {
+  background-image: radial-gradient(
+    oklch(0.68 0.17 200 / 0.08) 1px,
+    transparent 1px
+  );
+  background-size: 28px 28px;
+}
+
+/* ── Keyframes ── */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spin-reverse {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.08);
+  }
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(0.85);
+  }
+}
+
+@keyframes ring-expand {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+@keyframes count-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes new-badge-fade {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+
+@keyframes fake-pulse-border {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 oklch(0.52 0.19 27 / 0), 0 0 0 4px
+      oklch(0.52 0.19 27 / 0.15);
+  }
+  50% {
+    box-shadow: 0 0 0 8px oklch(0.52 0.19 27 / 0), 0 0 32px 8px
+      oklch(0.52 0.19 27 / 0.3);
+  }
+}
+
+.animate-float {
+  animation: float 4.5s ease-in-out infinite;
+}
+.animate-spin-slow {
+  animation: spin-slow 12s linear infinite;
+}
+.animate-spin-reverse {
+  animation: spin-reverse 18s linear infinite;
+}
+.animate-pulse-glow {
+  animation: pulse-glow 2.5s ease-in-out infinite;
+}
+.animate-pulse-dot {
+  animation: pulse-dot 1.4s ease-in-out infinite;
+}
+.animate-ring-expand {
+  animation: ring-expand 2s ease-out infinite;
+}
+.animate-count-up {
+  animation: count-up 0.5s ease-out forwards;
+}
+.animate-new-badge {
+  animation: new-badge-fade 3s ease-in-out forwards;
+}
+
+/* ── Fake alert pulsing border ── */
+.fake-alert-pulse {
+  animation: fake-pulse-border 2s ease-in-out infinite;
+}
+
+/* ── Trust Score Ring SVG ── */
+.trust-ring-track {
+  transition: stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Card hover lift ── */
+.card-lift {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.card-lift:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px oklch(0.12 0.04 252 / 0.14);
+}
+
+/* ── Teal glow button ── */
+.btn-teal {
+  background: linear-gradient(135deg, oklch(0.68 0.17 200), oklch(0.6 0.16 190));
+  color: oklch(0.08 0.03 250);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.btn-teal:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px oklch(0.68 0.17 200 / 0.45);
+}
+
+/* ── Announcement bar ── */
+.announce-bar {
+  background: linear-gradient(
+    90deg,
+    oklch(0.3 0.1 200),
+    oklch(0.22 0.07 220),
+    oklch(0.3 0.1 200)
+  );
+  background-size: 200% 100%;
+  animation: shimmer-bar 4s linear infinite;
+}
+@keyframes shimmer-bar {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+/* Stat counter animation */
+.stat-number {
+  font-variant-numeric: tabular-nums;
+}
