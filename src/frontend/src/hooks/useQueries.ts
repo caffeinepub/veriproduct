@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import type {
   Product,
   UserProfile,
@@ -37,9 +38,29 @@ export function useIsCallerAdmin() {
     queryKey: ["isCallerAdmin"],
     queryFn: async () => {
       if (!actor) return false;
-      return actor.isCallerAdmin();
+      try {
+        return await actor.isCallerAdmin();
+      } catch {
+        // User is not registered yet in the access control system
+        return false;
+      }
     },
     enabled: !!actor && !isFetching,
+    retry: false,
+  });
+}
+
+export function useClaimAdmin() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+  return useMutation<void, Error, string>({
+    mutationFn: async (secret: string) => {
+      if (!actor) throw new Error("Actor not ready");
+      return actor._initializeAccessControlWithSecret(secret);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["isCallerAdmin"] });
+    },
   });
 }
 
@@ -49,7 +70,11 @@ export function useGetCallerUserProfile() {
     queryKey: ["currentUserProfile"],
     queryFn: async () => {
       if (!actor) throw new Error("Actor not available");
-      return actor.getCallerUserProfile();
+      try {
+        return await actor.getCallerUserProfile();
+      } catch {
+        return null;
+      }
     },
     enabled: !!actor && !actorFetching,
     retry: false,
@@ -101,6 +126,9 @@ export function useVerifyProduct() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["verificationHistory"] });
+    },
+    onError: (err: Error) => {
+      toast.error(err.message || "Verification failed. Please try again.");
     },
   });
 }

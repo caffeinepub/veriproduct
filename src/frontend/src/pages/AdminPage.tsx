@@ -34,12 +34,12 @@ import {
   Database,
   Edit2,
   Home,
+  KeyRound,
   Loader2,
   LogIn,
   Plus,
   Save,
   ShieldCheck,
-  ShieldOff,
   Trash2,
   X,
 } from "lucide-react";
@@ -51,6 +51,7 @@ import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 import { useInternetIdentity } from "../hooks/useInternetIdentity";
 import {
+  useClaimAdmin,
   useInitialize,
   useIsCallerAdmin,
   useListProducts,
@@ -87,11 +88,13 @@ export default function AdminPage() {
   const updateMutation = useUpdateProduct();
   const removeMutation = useRemoveProduct();
   const initializeMutation = useInitialize();
+  const claimAdminMutation = useClaimAdmin();
 
   const [addOpen, setAddOpen] = useState(false);
   const [editProduct, setEditProduct] = useState<Product | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [form, setForm] = useState<Product>(EMPTY_PRODUCT);
+  const [adminToken, setAdminToken] = useState("");
 
   const isLoggingIn = loginStatus === "logging-in";
 
@@ -165,6 +168,31 @@ export default function AdminPage() {
       toast.success("Database initialized with AI-generated sample products!");
     } catch {
       toast.error("Failed to initialize database.");
+    }
+  };
+
+  const handleClaimAdmin = async () => {
+    if (!adminToken.trim()) {
+      toast.error("Please enter the admin token");
+      return;
+    }
+    try {
+      await claimAdminMutation.mutateAsync(adminToken.trim());
+      const stillAdmin = await queryClient
+        .fetchQuery({ queryKey: ["isCallerAdmin"] })
+        .catch(() => false);
+      if (stillAdmin) {
+        toast.success("Admin access granted!");
+        setAdminToken("");
+      } else {
+        toast.error(
+          "Incorrect token or admin has already been claimed by another account.",
+        );
+      }
+    } catch {
+      toast.error(
+        "Failed to claim admin access. Check your token and try again.",
+      );
     }
   };
 
@@ -245,36 +273,71 @@ export default function AdminPage() {
             </div>
           )}
 
-          {/* Not admin */}
+          {/* Not admin — show claim form */}
           {isAuthenticated && !adminLoading && !isAdmin && (
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex flex-col items-center justify-center py-24"
-              data-ocid="admin.error_state"
+              className="flex flex-col items-center justify-center py-16"
+              data-ocid="admin.claim_admin.panel"
             >
-              <div className="w-20 h-20 rounded-2xl bg-destructive/10 ring-2 ring-destructive/20 flex items-center justify-center mb-6">
-                <ShieldOff className="w-10 h-10 text-destructive/60" />
+              <div className="w-20 h-20 rounded-2xl bg-amber-500/10 ring-2 ring-amber-500/20 flex items-center justify-center mb-6">
+                <KeyRound className="w-10 h-10 text-amber-400" />
               </div>
-              <h2 className="text-xl font-semibold mb-2">Access Denied</h2>
-              <p className="text-muted-foreground text-sm mb-8 text-center max-w-xs">
-                Your account does not have admin privileges. Contact the
-                platform administrator to request access.
+              <h2 className="text-xl font-semibold mb-2">Claim Admin Access</h2>
+              <p className="text-muted-foreground text-sm mb-8 text-center max-w-sm">
+                Enter your admin token to activate admin privileges for this
+                account. The token is shown in your Caffeine project dashboard
+                under Settings.
               </p>
-              <div className="flex flex-col sm:flex-row gap-3">
+
+              <div className="w-full max-w-sm space-y-3">
+                <Input
+                  type="password"
+                  placeholder="Paste your admin token here"
+                  value={adminToken}
+                  onChange={(e) => setAdminToken(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleClaimAdmin()}
+                  data-ocid="admin.claim_admin.token_input"
+                  className="bg-white/5 border-white/20"
+                />
+                <Button
+                  className="w-full bg-teal text-white hover:bg-teal/80"
+                  onClick={handleClaimAdmin}
+                  disabled={claimAdminMutation.isPending || !adminToken.trim()}
+                  data-ocid="admin.claim_admin.submit_button"
+                >
+                  {claimAdminMutation.isPending ? (
+                    <Loader2 className="w-4 h-4 mr-1.5 animate-spin" />
+                  ) : (
+                    <KeyRound className="w-4 h-4 mr-1.5" />
+                  )}
+                  {claimAdminMutation.isPending
+                    ? "Verifying..."
+                    : "Activate Admin Access"}
+                </Button>
+              </div>
+
+              <div className="flex gap-3 mt-6">
                 <Link to="/">
-                  <Button data-ocid="admin.go_home.button">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-muted-foreground hover:text-white"
+                  >
                     <Home className="w-4 h-4 mr-1.5" />
                     Back to Home
                   </Button>
                 </Link>
                 <Button
-                  variant="outline"
+                  variant="ghost"
+                  size="sm"
                   onClick={handleLogout}
                   data-ocid="admin.logout.button"
-                  className="border-white/20 text-white/70 hover:text-white hover:bg-white/10"
+                  className="text-muted-foreground hover:text-white"
                 >
-                  Logout & Switch Account
+                  <X className="w-4 h-4 mr-1.5" />
+                  Switch Account
                 </Button>
               </div>
             </motion.div>

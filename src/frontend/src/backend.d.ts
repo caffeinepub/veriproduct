@@ -15,7 +15,9 @@ export interface VerificationLog {
 export interface VerificationResult {
     status: string;
     matchedProductDetails?: Product;
+    originalProductDetails?: Product;
     reason: string;
+    fakeIndicators?: string[];
 }
 export interface UserProfile {
     name: string;
@@ -41,6 +43,7 @@ export enum UserRole {
     guest = "guest"
 }
 export interface backendInterface {
+    _initializeAccessControlWithSecret(userSecret: string): Promise<void>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
